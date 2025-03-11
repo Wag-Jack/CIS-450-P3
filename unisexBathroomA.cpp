@@ -67,25 +67,29 @@ void womanExit(int id) {
     }
 }
 
-void child(int id, int gender) {
-    switch (gender) {
-        case 1:
-            printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            manEnter(id);
-            printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            manExit(id);
-            printf("Person %d (male) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            break;
-        case 2:
-            printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            womanEnter(id);
-            printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            womanExit(id);
-            printf("Person %d (female) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
-            break;
-        default:
-            break;
-    }
+void useBathroom() {
+    uniform_int_distribution<int> distribution(100, 2000);
+    chrono::milliseconds timeToWait = chrono::milliseconds(distribution(gen));
+
+    this_thread::sleep_for(timeToWait);
+}
+
+void oneMan(int id) {
+    printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+    manEnter(id);
+    printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+    useBathroom();
+    manExit(id);
+    printf("Person %d (male) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+}
+
+void oneWoman(int id) {
+    printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+    womanEnter(id);
+    printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+    useBathroom();
+    womanExit(id);
+    printf("Person %d (female) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 }
 
 int main(int argc, const char *argv[]) {
@@ -96,7 +100,11 @@ int main(int argc, const char *argv[]) {
     //Create child threads
     for (int i = 0; i <= 50; i++) {
         childGender = distribution(gen);
-        person.push_back(thread(child, i, childGender));
+        if (childGender % 2 == 1) {
+            person.push_back(thread(oneMan, i));
+        } else {
+            person.push_back(thread(oneWoman, i));
+        }
     }
 
     for (thread &c : person) {
