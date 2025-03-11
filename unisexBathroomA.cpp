@@ -29,9 +29,10 @@ vector<thread> person; //thread of people
 void manEnter(int id) {
     unique_lock<mutex> lck(mtx);
     while (bWomen > 0 || bMen == 3) {
-        //wait for men to leave
+        //wait for bathroom to be available
         manAllowed.wait(lck);
     }
+
     bMen++; //one man enters
 }
 
@@ -49,13 +50,16 @@ void womanEnter(int id) {
     unique_lock<mutex> lck(mtx);
     
     while (bMen > 0 || bWomen == 3) {
+        //wait for bathroom to be available
         womanAllowed.wait(lck);
     }
+
     bWomen++; //one woman enters
 }
 
 void womanExit(int id) {
     bWomen--;
+
     if (bWomen == 2) {
         womanAllowed.notify_one(); //signify next thread
     } else if (bWomen == 0) {
@@ -66,12 +70,18 @@ void womanExit(int id) {
 void child(int id, int gender) {
     switch (gender) {
         case 1:
+            printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             manEnter(id);
+            printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             manExit(id);
+            printf("Person %d (male) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             break;
         case 2:
+            printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             womanEnter(id);
+            printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             womanExit(id);
+            printf("Person %d (female) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
             break;
         default:
             break;
