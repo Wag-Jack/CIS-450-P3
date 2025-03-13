@@ -21,17 +21,22 @@ mutex mtx; //monitor lock
 int bMen = 0; //men in bathroom
 int bWomen = 0; //women in bathroom
 
-condition_variable manAllowed;
-condition_variable womanAllowed;
+bool readyToMove = false; //boolean to avoid overlap between people moving in/out of bathroom
+
+condition_variable manAllowed; //condition variable for men
+condition_variable womanAllowed; //condition variable for women
 
 vector<thread> person; //thread of people
 
 void manEnter(int id) {
     unique_lock<mutex> lck(mtx);
-    while (bWomen > 0 || bMen == 3) {
-        //wait for bathroom to be available
+
+    printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+
+    if (bWomen > 0 || bMen == 3) {
         manAllowed.wait(lck);
     }
+    manAllowed.wait(lck, [&id] {return (bWomen == 0 && bMen < 3);});
 
     bMen++; //one man enters
 }
@@ -48,17 +53,19 @@ void manExit(int id) {
 
 void womanEnter(int id) {
     unique_lock<mutex> lck(mtx);
-    
-    while (bMen > 0 || bWomen == 3) {
-        //wait for bathroom to be available
+
+    printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
+
+    if (bMen > 0 || bWomen == 3) {
         womanAllowed.wait(lck);
     }
+    womanAllowed.wait(lck, [&id] {return (bMen == 0 && bWomen < 3);});
 
     bWomen++; //one woman enters
 }
 
 void womanExit(int id) {
-    bWomen--;
+    bWomen--; //one woman leaves
 
     if (bWomen == 2) {
         womanAllowed.notify_one(); //signify next thread
@@ -67,6 +74,7 @@ void womanExit(int id) {
     }
 }
 
+//simulate a random "bathroom usage" time between 100 and 2000 ms
 void useBathroom() {
     uniform_int_distribution<int> distribution(100, 2000);
     chrono::milliseconds timeToWait = chrono::milliseconds(distribution(gen));
@@ -74,8 +82,8 @@ void useBathroom() {
     this_thread::sleep_for(timeToWait);
 }
 
+//male thread
 void oneMan(int id) {
-    printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
     manEnter(id);
     printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
     useBathroom();
@@ -83,8 +91,8 @@ void oneMan(int id) {
     printf("Person %d (male) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 }
 
+//female thread
 void oneWoman(int id) {
-    printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
     womanEnter(id);
     printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
     useBathroom();
@@ -109,7 +117,7 @@ int main(int argc, const char *argv[]) {
 
     for (thread &c : person) {
         c.join();
-    } 
+    }
 
     return 0;
 }
