@@ -21,8 +21,6 @@ mutex mtx; //monitor lock
 int bMen = 0; //men in bathroom
 int bWomen = 0; //women in bathroom
 
-bool readyToMove = false; //boolean to avoid overlap between people moving in/out of bathroom
-
 condition_variable manAllowed; //condition variable for men
 condition_variable womanAllowed; //condition variable for women
 
@@ -34,9 +32,8 @@ void manEnter(int id) {
     printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
     if (bWomen > 0 || bMen == 3) {
-        manAllowed.wait(lck);
+        manAllowed.wait(lck, [&id] {return (bWomen == 0 && bMen < 3);});
     }
-    manAllowed.wait(lck, [&id] {return (bWomen == 0 && bMen < 3);});
 
     bMen++; //one man enters
     printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
@@ -59,9 +56,8 @@ void womanEnter(int id) {
     printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
     if (bMen > 0 || bWomen == 3) {
-        womanAllowed.wait(lck);
+        womanAllowed.wait(lck, [&id] {return (bMen == 0 && bWomen < 3);});
     }
-    womanAllowed.wait(lck, [&id] {return (bMen == 0 && bWomen < 3);});
 
     bWomen++; //one woman enters
     printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);

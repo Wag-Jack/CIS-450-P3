@@ -21,7 +21,11 @@ mutex mtx; //monitor lock
 int bMen = 0; //men in bathroom
 int bWomen = 0; //women in bathroom
 
-bool readyToMove = false; //boolean to avoid overlap between people moving in/out of bathroom
+int wMen = 0; //men waiting for the bathroom
+int wWomen = 0; //women waiting for the bathroom
+
+int consMen = 0; //number of men that used the bathroom consecutively
+int consWomen = 0; //number of women that used the bathroom consecutively
 
 condition_variable manAllowed; //condition variable for men
 condition_variable womanAllowed; //condition variable for women
@@ -33,10 +37,14 @@ void manEnter(int id) {
 
     printf("Person %d (male) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
-    if (bWomen > 0 || bMen == 3) {
-        manAllowed.wait(lck);
+    if (bWomen > 0 || bMen == 3 || (wWomen > 0 && consMen >= 10)) {
+        wMen++;
+        manAllowed.wait(lck, [&id] {return (bWomen == 0 && bMen < 3);});
+        wMen--;
     }
-    manAllowed.wait(lck, [&id] {return (bWomen == 0 && bMen < 3);});
+
+    consMen++; //increase amount of men consecutively entering the bathroom
+    consWomen = 0; //women not coming in consecutively anymore
 
     bMen++; //one man enters
     printf("Person %d (male) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
@@ -46,9 +54,9 @@ void manExit(int id) {
     bMen--; //one man leaves
     printf("Person %d (male) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
-    if (bMen == 2) {
+    if (wMen > 0 && consMen < 10) {
         manAllowed.notify_one(); //signify next thread
-    } else if (bMen == 0) {
+    } else if (bMen == 0 && wWomen > 0) {
         womanAllowed.notify_all(); //no men in bathroom, women able to come in
     }
 }
@@ -58,10 +66,14 @@ void womanEnter(int id) {
 
     printf("Person %d (female) wants to enter the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
-    if (bMen > 0 || bWomen == 3) {
-        womanAllowed.wait(lck);
+    if (bMen > 0 || bWomen == 3 || (wMen > 0 && consWomen >= 10)) {
+        wWomen++;
+        womanAllowed.wait(lck, [&id] {return (bMen == 0 && bWomen < 3);});
+        wWomen--;
     }
-    womanAllowed.wait(lck, [&id] {return (bMen == 0 && bWomen < 3);});
+
+    consWomen++; //increase amount of women consecutively entering the bathroom
+    consMen = 0; //men not coming in consecutively anymore
 
     bWomen++; //one woman enters
     printf("Person %d (female) enters the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
@@ -71,9 +83,9 @@ void womanExit(int id) {
     bWomen--; //one woman leaves
     printf("Person %d (female) exits the bathroom. #Men: %d. #Women: %d.\n", id, bMen, bWomen);
 
-    if (bWomen == 2) {
+    if (wWomen > 0 && consWomen < 10) {
         womanAllowed.notify_one(); //signify next thread
-    } else if (bWomen == 0) {
+    } else if (bWomen == 0 && wMen > 0) {
         manAllowed.notify_all(); //no women in bathroom, men able to come in
     }
 }
