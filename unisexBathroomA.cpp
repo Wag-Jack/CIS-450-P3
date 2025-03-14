@@ -103,8 +103,8 @@ int main(int argc, const char *argv[]) {
 
     //Create child threads
     for (int i = 0; i <= 50; i++) {
-        childGender = distribution(gen);
-        if (childGender % 2 == 1) {
+        childGender = distribution(gen); //determine a random gender
+        if (childGender % 2 == 1) { //Create a person thread based on random gender
             person.push_back(thread(oneMan, i));
         } else {
             person.push_back(thread(oneWoman, i));
