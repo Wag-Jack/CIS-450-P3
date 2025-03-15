@@ -5,75 +5,60 @@ withdrawals must wait if the balance is too low
 multiple threads can access the account safely using mutex and condition variable
 
 */
-
-#include <iostream>
-#include <thread>
-#include <mutex>
 #include <condition_variable>
-#include <cstdlib>
-
+#include <iostream>
+#include <mutex>
+#include <thread>
+#include <random>
 using namespace std;
+
+random_device rd; //Seed source for random number engine
+mt19937 gen(rd()); //mersenne_twister_engine seeded with rd()
 
 int balance = 0;// for bank accout balance
 mutex mtx; // mutex for balance to prevent race conditions
-condition_variable cv;// for waiting withdrawals when balance is low
-mutex cout_mutex;
+condition_variable canWithdraw;// for waiting withdrawals when balance is low
 
 // deposit implementation
-void deposit(int amount) {
-{
-    unique_lock<mutex> lock(mtx);// lock mutex to ensure no other thread modifies balance while runnign
-    balance += amount;// add
-}
-{
-        lock_guard<mutex> print_lock(cout_mutex);
-    cout << "Deposited " << amount << ". Balance: " << balance << endl;
-}
-    cv.notify_all();// notify waiting withdrawals
+void deposit(int id, int amount) {
+    balance += amount; //add amount to balance
+    canWithdraw.notify_all(); //notify waiting withdrawals
+    printf("Customer %d deposits %d. Balance: %d\n", id, amount, balance);
 }
 
 // withdraw function
-void withdraw(int amount) {
+void withdraw(int id, int amount) {
     unique_lock<mutex> lock(mtx);
 
-    // wait til enoigh balance is enoigh before withdrawing
+    printf("Customer %d wants to withdraw %d. Balance: %d\n", id, amount, balance);
+
+    // wait til enough balance is enough before withdrawing
     while (balance < amount) {
-        cv.wait(lock);
+        canWithdraw.wait(lock, [&amount] {return (balance >= amount);});
     }
 
+    //process withdrawla
     balance -= amount; 
-    lock.unlock(); //unlock before printing
-
-    { 
-        lock_guard<mutex> print_lock(cout_mutex);
-        cout << "Withdrew " << amount << ". Balance: " << balance << endl;
-    }
+    printf("Customer %d withdraws %d. Balance: %d\n", id, amount, balance);
 }
 
 // Customer function
 void customer(int id) {
-    int action = rand() % 2;//0 is withdraw and 1 is deposit
-    int amount = (rand() % 100) + 1; //random number generator between 1-100
+    uniform_int_distribution<int> actionDistribution(0,1);
+    uniform_int_distribution<int> amountDistribution(1,100);
+    
+    int action = actionDistribution(gen);//0 is withdraw and 1 is deposit
+    int amount = amountDistribution(gen); //random number generator between 1-100
 
-    { //print bwfore withdrawing or depositing
-        lock_guard<mutex> print_lock(cout_mutex);
-        if (action == 0) {
-            cout << "Customer " << id << " wants to withdraw " << amount << endl;
-        } else {
-            cout << "Customer " << id << " deposits " << amount << endl;
-        }
-    } 
-
-    if (action == 0) { // Withdraw
-        withdraw(amount);
+    if (action == 0) { //With draw
+        withdraw(id, amount);
     } else { // Deposit
-        deposit(amount);
+        deposit(id, amount);
     }
 }
 
 int main() {
-    srand(time(0));// seed random numebr generator
-
+    //create thread of customers
     thread customers[10];
 
     for (int i = 0; i < 10; i++) { //start and iterate through 10 customer threads customers 

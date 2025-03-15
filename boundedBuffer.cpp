@@ -63,7 +63,7 @@ void Consumer(counting_semaphore<MAX> &sem_empty, counting_semaphore<MAX> &sem_f
         front = (front + 1) % bufSize;
         
         //signal the mutex lock and empty semaphore
-        mutex.acquire();
+        mutex.release();
         sem_empty.release();
     }
 

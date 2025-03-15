@@ -2,17 +2,26 @@
 **Developed by Eman Sedqi and Jack Wagner**\
 **March 14th, 2025**
 
-# Compilation Instructions
-To compile and run each program, you must have a g++ compiler which can support C++20. We used Visual Studio Code configured with a g++ compiler to develop this project. To run each file as an executable, open a terminal and type in the following g++ command:
-```
-g++ {filename}.cpp -o {executable_name}
-```
-Once you have compiled your cpp file, it will now be available as an executable. You can run it by typing the following into your terminal:
-```
-./{executable_name}
-```
-
 ## (1) Bounded Buffer
+
+### Compilation Instructions
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In  order to compile this into an executable using C++20 standard, open a terminal and run the following command:
+```
+g++ -std=c++20 -pthread boundedBuffer.cpp -o boundedBuffer
+```
+Once you have you rexecutable, run it in the terminal, ensuring you have the correct parameters set:
+```
+./boundedBuffer <number of iterations> <buffer size>
+```
+You should have a sample output similar to what is shown below.
+
+### Sample Output
+For running boundedBuffer.exe with 10 iterations and a buffer size of 5, we get:
+```
+the total is 18
+the total is 48
+the total is 69
+```
 
 ## (2a) Unisex Bathroom 
 In this problem, we have a unisex bathroom which abides by the following two conditions:</br>
@@ -23,7 +32,18 @@ To implement this solution, we utilized fifty threads with randomized genders be
 
 The `enter` procedures work by locking the thread if there is either a member of the opposite gender in the bathroom or the amount of people of the same gender in the bathroom reaches three. Once these conditions are no longer true, the thread is able to begin running and increments the amount of people in the bathroom. The `exit` procedures work by decrementing the amount of people in the bathroom and signifying if either one more member of the same gender can be in the bathroom or the bathroom is free for the other gender to enter, signaling the respective condition variable using `notify_one` and `notify_all` respectively.
 
-Below is a sample output we received when executing the program:
+### Compilation Instructions:
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable, open a terminal and run the following command:
+```
+g++ unisexBathroom.cpp -o unisexBathroom
+```
+Once you have your executable, run it in the terminal:
+```
+./unisexBathroom
+```
+You should have a sample output similar to what is shown below.
+
+### Sample Output:
 ```
 Person 1 (female) wants to enter the bathroom. #Men: 0. #Women: 0.
 Person 1 (female) enters the bathroom. #Men: 0. #Women: 1.
@@ -178,7 +198,6 @@ Person 11 (female) exits the bathroom. #Men: 0. #Women: 1.
 Person 15 (female) exits the bathroom. #Men: 0. #Women: 0.
 ```
 ## (2b) Fair Unisex Bathroom
-
 This problem uses the same concept as the unisex bathroom problem but adds an additional parameter:
 - No more than ten members of the same gender can have entered the bathroom at the same time. 
 
@@ -186,7 +205,19 @@ In order to implement this, we made some modifications to our code from the prev
 
 The `exit` procedures, on the other hand, are changed. We signal one member of the same gender can enter the bathroom if there is at least one member of the same gender waiting to use the bathroom and the amount of consecutive members of the same gender entering the bathroom is less than 10. Otherwise, we signal that members of the opposite gender can enter the bathroom if there are no members of the current gender in the bathroom and the amount of members of the opposite gender waiting outside the bathroom is greater than zero.
 
-Below is a sample output we received when running the program:
+### Compilation Instructions:
+
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable, open a terminal and run the following command:
+```
+g++ fairUnisexBathroom.cpp -o fairUnisexBathroom
+```
+Once you have your executable, run it in the terminal:
+```
+./fairUnisexBathroom
+```
+You should have a sample output similar to what is shown below.
+
+### Sample Output:
 ```
 Person 4 (male) wants to enter the bathroom. #Men: 0. #Women: 0.
 Person 4 (male) enters the bathroom. #Men: 1. #Women: 0.
@@ -345,50 +376,56 @@ Person 39 (female) exits the bathroom. #Men: 0. #Women: 0.
 ## (3a) Savings Account
 This project implements a synchronized bank account system where multiple customers can deposit and withdraw money concurrently. The program ensures safe access to the shared account balance using mutexes and condition variables. This version is the basic solution, where withdrawals wait until sufficient funds are available. Any withdrawal that can be fulfilled proceeds immediately when funds become available.
 
-Below is the output of each of our five trial runs for the basic solutions of this problem:
-### Trial 1
+### Compilation Instructions
+In order to run this program, you will need to go to [Online GDB's online C++ compiler](https://www.onlinegdb.com/online_c++_compiler#). There, copy the contents of `bankAccount.cpp` and paste it into the online IDE. Once you have done this, run the program by pressing the green `Run` button, and the output should be shown in the terminal akin to one of the test cases from below.
+
+### Test Cases
+**NOTE: *While the final code has depositing/withdrawing customers be random, these test cases were ran with pre-determined threads***
+
+**Trial 1:** Five people depositing $500, five people withdrawing $100
 ```
 ```
 
-### Trial 2
+**Trial 2:** Seven people depositing $100, three people withdrawing $500
 ```
 ```
 
-### Trial 3
+**Trial 3:** Nine people depositing $50. one person withdrawing $900
 ```
 ```
 
-### Trial 4
+**Trial 4:** Three people depositing $500, seven people withdrawing $100
 ```
 ```
 
-### Trial 5
+**Trial 5:** One person depositing $900, nine people withdrawing $50
 ```
 ```
-
 ## (3b) FCFS Savings Account
 This project aims to implement a FCFS solution to the savings account problem described in (3a). In this solution, strict ordering is enforced so that withdrawal requests are handled in the order they were made. This solution utilizes a queue to track the withdrawal requests, ensuring that earlier requests are processed before later ones, even if a smaller withdrawal could be fulfilled first. 
 
-Below is the sample output of each of our five trial runs for the FCFS solutions of this problem:
-### Trial 1
+### Compilation Instructions
+In order to run this program, you will need to go to [Online GDB's online C++ compiler](https://www.onlinegdb.com/online_c++_compiler#). There, copy the contents of `bankAccount.cpp` and paste it into the online IDE. Once you have done this, run the program by pressing the green `Run` button, and the output should be shown in the terminal akin to one of the test cases from below.
+
+### Test Cases
+**Trial 1:**
 ```
 ```
 
-### Trial 2
+**Trial 2:**
 ```
 ```
 
-### Trial 3
+**Trial 3:**
 ```
 ```
 
-### Trial 4
+**Trial 4:**
 ```
 ```
 
-### Trial 5
+**Trial 5:**
 ```
 ```
-
 ## Comparison Between (3a) and (3b)
 The implementation uses threads to simulate multiple customers performing transactions and demonstrates the differences between the two synchronization approaches. The output of the programs demonstrate how deposit and withdrawal operations are synchronized to prevent race conditions. In the basic solution, withdrawals occur as soon as enough funds are available, but they do not necessarily follow the order in which they were requested. This can result in smaller withdrawals being processed before larger ones if sufficient funds exists for the smaller amount first. In the FCFS solution, withdrawals are processed in strict order, ensuring that earlier requests are fulfilled before later ones, even if a smaller request could be handled first. This gurantees fairness among withdrawal requests and prevents starvation, making the behavior of the program more predictable and structured.
