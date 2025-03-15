@@ -3,6 +3,11 @@
 **March 14th, 2025**
 
 ## (1) Bounded Buffer
+In this problem, we are expanding the given solution to the bounded buffer problem in order to allow for multiple producers and consumers and allow for a user-given buffer size.
+
+In order to do this, we first added an additional command line argument `bufSize` to get the user's desired buffer size. Then, we turned `buffer` a dynamically allocated integer array that makes the buffer the desired size of the user.
+
+Within the `Producer` and `Consumer` functions, we added an additional mutex lock that waits until the part of the buffer we're accessing is done being accessed by either a producer or consumer. Additionally, we updated the logic so that the producers and consumers shift through the buffer's `front` and `rear` between the different threads.
 
 ### Compilation Instructions
 This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable ***using C++20 standard***, open a terminal and run the following command:
