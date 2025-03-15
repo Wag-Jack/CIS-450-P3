@@ -1,5 +1,4 @@
-/*
- * boundedBuffer.c
+/* boundedBuffer.c
  *
  * A complete example of simple producer/consumer program. The Producer
  * and Consumer functions are executed as independent threads.  They
@@ -16,6 +15,7 @@
 #include <iostream>
 #include <semaphore>
 #include <thread>
+#include <vector>
 
 using namespace std;
 
@@ -23,36 +23,47 @@ const int MAX = 100; // the maximum possible value of the internal counter for s
 const int NUM_PROD = 3;
 const int NUM_CONS = 3;
 
-int buffer; // shared buffer, size = 1 /*Change buffer size to n*/
+int bufSize;
+int* buffer; // shared buffer, size = bufSize
 int numIters;
 
-/*
-TODO:
-1. Allow multiple producers/consumers
-2. Change bugger size from 1 to n, n being a command line parameter
-3. Main thread creates 3 producers and 3 consumers
-*/
+int front = 0;
+int rear = 0;
 
 // deposit 1, ..., numIters into the data buffer
-void Producer(counting_semaphore<MAX> &sem_empty, counting_semaphore<MAX> &sem_full)
-{
-    for (int produced = 0; produced < numIters; produced++)
-    {
+void Producer(counting_semaphore<MAX> &sem_empty, counting_semaphore<MAX> &sem_full, counting_semaphore<MAX> &mutex) {
+    
+    for (int produced = 0; produced < numIters; produced++) {
+        //wait for both empty sempaphore and mutex lock
         sem_empty.acquire();
-        buffer = produced;
+        mutex.acquire();
+
+        //modify buffer with production
+        buffer[rear] = produced;
+        rear = (rear + 1) % bufSize;
+
+        //signal the mutex lock and full semaphore
+        mutex.release();
         sem_full.release();
     }
 }
 
 // fetch numIters items from the buffer and sum them
-void Consumer(counting_semaphore<MAX> &sem_empty, counting_semaphore<MAX> &sem_full)
-{
+void Consumer(counting_semaphore<MAX> &sem_empty, counting_semaphore<MAX> &sem_full, counting_semaphore<MAX> &mutex) {
     int total = 0;
 
     for (int consumed = 0; consumed < numIters; consumed++)
     {
+        //wait for both full semaphore and mutex lock
         sem_full.acquire();
-        total = total + buffer;
+        mutex.acquire();
+        
+        //modify buffer
+        total = total + buffer[front];
+        front = (front + 1) % bufSize;
+        
+        //signal the mutex lock and empty semaphore
+        mutex.acquire();
         sem_empty.release();
     }
 
@@ -71,20 +82,26 @@ int main(int argc, char *argv[])
         printf("Usage: boundedBuffer <Number of Iterations> <Buffer size>\n");
         exit(0);
     }
-    numIters = atoi(argv[1]);
-    buffer = atoi(argv[2]);
 
-    counting_semaphore<MAX> sem_empty(1);
+    //Retrieve command line values
+    numIters = atoi(argv[1]);
+    bufSize = atoi(argv[2]);
+
+    //Create buffer using dynamically allocated memory
+    buffer = new int[bufSize];
+
+    counting_semaphore<MAX> sem_empty(bufSize);
     counting_semaphore<MAX> sem_full(0);
+    counting_semaphore<MAX> mutex(1);
 
     //Create vector of NUM_PROD producer threads
     for (int i = 0; i < NUM_PROD; i++) {
-        producer.push_back(thread(Producer, ref(sem_empty), ref(sem_full)));
+        producer.push_back(thread(Producer, ref(sem_empty), ref(sem_full), ref(mutex)));
     }
 
     //Create vector of NUM_CONS consumer threads
     for (int i = 0; i < NUM_CONS; i++) {
-        consumer.push_back(thread(Consumer, ref(sem_empty), ref(sem_full)));
+        consumer.push_back(thread(Consumer, ref(sem_empty), ref(sem_full), ref(mutex)));
     }
 
     //Execute all producer threads
@@ -97,5 +114,8 @@ int main(int argc, char *argv[])
         consumer[i].join();
     }
 
-    exit(0);
+    //delete data from bugger
+    delete[] buffer;
+
+    return 0;
 }

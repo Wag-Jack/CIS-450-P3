@@ -1,5 +1,6 @@
 boundedBuffer.exe
-savingAccountA.exe
-savingAccountB.exe
-unisexBathroomA.exe
-unisexBathroomB.exe
+bankAccount.exe
+bankAccountFCFS.exe
+unisexBathroom.exe
+fairUnisexBathroom.exe
+.vscode
