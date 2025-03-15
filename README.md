@@ -5,7 +5,7 @@
 ## (1) Bounded Buffer
 
 ### Compilation Instructions
-This program was developed and compiled using a g++ compiler on Visual Studio Code. In  order to compile this into an executable using C++20 standard, open a terminal and run the following command:
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable ***using C++20 standard***, open a terminal and run the following command:
 ```
 g++ -std=c++20 -pthread boundedBuffer.cpp -o boundedBuffer
 ```
@@ -16,7 +16,7 @@ Once you have you rexecutable, run it in the terminal, ensuring you have the cor
 You should have a sample output similar to what is shown below.
 
 ### Sample Output
-For running boundedBuffer.exe with 10 iterations and a buffer size of 5, we get:
+For running boundedBuffer.exe with 10 iterations and a buffer size of 5, one possible output we get is:
 ```
 the total is 18
 the total is 48
@@ -377,55 +377,206 @@ Person 39 (female) exits the bathroom. #Men: 0. #Women: 0.
 This project implements a synchronized bank account system where multiple customers can deposit and withdraw money concurrently. The program ensures safe access to the shared account balance using mutexes and condition variables. This version is the basic solution, where withdrawals wait until sufficient funds are available. Any withdrawal that can be fulfilled proceeds immediately when funds become available.
 
 ### Compilation Instructions
-In order to run this program, you will need to go to [Online GDB's online C++ compiler](https://www.onlinegdb.com/online_c++_compiler#). There, copy the contents of `bankAccount.cpp` and paste it into the online IDE. Once you have done this, run the program by pressing the green `Run` button, and the output should be shown in the terminal akin to one of the test cases from below.
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable, open a terminal and run the following command:
+```
+g++ bankAccount.cpp -o bankAccount
+```
+Once you have your executable, run it in the terminal:
+```
+./bankAccount
+```
+You should have a sample output similar to one of the trials shown below.
 
 ### Test Cases
-**NOTE: *While the final code has depositing/withdrawing customers be random, these test cases were ran with pre-determined threads***
 
-**Trial 1:** Five people depositing $500, five people withdrawing $100
+**Trial 1:**
 ```
+Customer 0 wants to withdraw 26. Balance: 0
+Customer 0 withdraws 26. Balance: 214
+Customer 3 deposits 25. Balance: 38
+Customer 4 deposits 18. Balance: 56
+Customer 6 deposits 69. Balance: 125
+Customer 7 deposits 36. Balance: 161
+Customer 9 deposits 79. Balance: 240
+Customer 1 deposits 13. Balance: 13
+Customer 2 wants to withdraw 41. Balance: 214
+Customer 2 withdraws 41. Balance: 173
+Customer 5 wants to withdraw 35. Balance: 173
+Customer 5 withdraws 35. Balance: 138
+Customer 8 wants to withdraw 21. Balance: 138
+Customer 8 withdraws 21. Balance: 117
 ```
 
-**Trial 2:** Seven people depositing $100, three people withdrawing $500
+**Trial 2:**
 ```
+Customer 1 wants to withdraw 19. Balance: 0
+Customer 1 withdraws 19. Balance: 272
+Customer 4 deposits 47. Balance: 56
+Customer 5 deposits 82. Balance: 138
+Customer 7 deposits 90. Balance: 228
+Customer 9 deposits 63. Balance: 291
+Customer 0 deposits 9. Balance: 9
+Customer 2 wants to withdraw 21. Balance: 272
+Customer 2 withdraws 21. Balance: 251
+Customer 3 wants to withdraw 96. Balance: 251
+Customer 3 withdraws 96. Balance: 155
+Customer 6 wants to withdraw 53. Balance: 155
+Customer 6 withdraws 53. Balance: 102
+Customer 8 wants to withdraw 61. Balance: 102
+Customer 8 withdraws 61. Balance: 41
 ```
 
-**Trial 3:** Nine people depositing $50. one person withdrawing $900
+**Trial 3:**
 ```
+Customer 0 deposits 32. Balance: 32
+Customer 1 wants to withdraw 21. Balance: 32
+Customer 1 withdraws 21. Balance: 234
+Customer 3 deposits 33. Balance: 114
+Customer 6 deposits 7. Balance: 121
+Customer 7 deposits 45. Balance: 166
+Customer 8 deposits 5. Balance: 171
+Customer 9 deposits 84. Balance: 255
+Customer 2 deposits 49. Balance: 81
+Customer 4 wants to withdraw 20. Balance: 234
+Customer 4 withdraws 20. Balance: 214
+Customer 5 wants to withdraw 86. Balance: 214
+Customer 5 withdraws 86. Balance: 128
 ```
 
-**Trial 4:** Three people depositing $500, seven people withdrawing $100
+**Trial 4:**
 ```
+Customer 0 wants to withdraw 92. Balance: 0
+Customer 0 withdraws 92. Balance: 193
+Customer 4 deposits 64. Balance: 118
+Customer 5 deposits 50. Balance: 168
+Customer 6 deposits 31. Balance: 199
+Customer 7 deposits 75. Balance: 274
+Customer 9 deposits 11. Balance: 285
+Customer 1 deposits 54. Balance: 54
+Customer 2 wants to withdraw 98. Balance: 193
+Customer 2 withdraws 98. Balance: 95
+Customer 3 wants to withdraw 58. Balance: 95
+Customer 3 withdraws 58. Balance: 37
+Customer 8 wants to withdraw 2. Balance: 37
+Customer 8 withdraws 2. Balance: 35
 ```
 
-**Trial 5:** One person depositing $900, nine people withdrawing $50
+**Trial 5:**
 ```
+Customer 0 deposits 22. Balance: 22
+Customer 1 deposits 79. Balance: 101
+Customer 2 deposits 30. Balance: 131
+Customer 3 wants to withdraw 25. Balance: 131
+Customer 3 withdraws 25. Balance: 416
+Customer 5 deposits 88. Balance: 257
+Customer 6 deposits 34. Balance: 291
+Customer 7 deposits 19. Balance: 310
+Customer 8 deposits 34. Balance: 344
+Customer 9 deposits 97. Balance: 441
+Customer 4 deposits 38. Balance: 169
 ```
 ## (3b) FCFS Savings Account
 This project aims to implement a FCFS solution to the savings account problem described in (3a). In this solution, strict ordering is enforced so that withdrawal requests are handled in the order they were made. This solution utilizes a queue to track the withdrawal requests, ensuring that earlier requests are processed before later ones, even if a smaller withdrawal could be fulfilled first. 
 
 ### Compilation Instructions
-In order to run this program, you will need to go to [Online GDB's online C++ compiler](https://www.onlinegdb.com/online_c++_compiler#). There, copy the contents of `bankAccount.cpp` and paste it into the online IDE. Once you have done this, run the program by pressing the green `Run` button, and the output should be shown in the terminal akin to one of the test cases from below.
+This program was developed and compiled using a g++ compiler on Visual Studio Code. In order to compile this into an executable, open a terminal and run the following command:
+```
+g++ bankAccountFCFS.cpp -o bankAccountFCFS
+```
+Once you have your executable, run it in the terminal:
+```
+./bankAccountFCFS
+```
+You should have a sample output similar to one of the trials shown below.
 
 ### Test Cases
 **Trial 1:**
 ```
+Customer 0 wants to withdraw 36. Balance: 0
+Customer 0 withdraws 36. Balance 328
+Customer 3 deposits 40. Balance: 73
+Customer 4 deposits 97. Balance: 170
+Customer 6 deposits 57. Balance: 227
+Customer 7 deposits 92. Balance: 319
+Customer 8 deposits 45. Balance: 364
+Customer 2 deposits 33. Balance: 33
+Customer 1 wants to withdraw 48. Balance: 328
+Customer 1 withdraws 48. Balance 280
+Customer 5 wants to withdraw 98. Balance: 280
+Customer 5 withdraws 98. Balance 182
+Customer 9 wants to withdraw 57. Balance: 182
+Customer 9 withdraws 57. Balance 125
 ```
 
 **Trial 2:**
 ```
+Customer 1 deposits 92. Balance: 92
+Customer 2 wants to withdraw 72. Balance: 92
+Customer 2 withdraws 72. Balance 320
+Customer 3 deposits 46. Balance: 142
+Customer 6 deposits 84. Balance: 226
+Customer 7 deposits 100. Balance: 326
+Customer 8 deposits 17. Balance: 343
+Customer 9 deposits 49. Balance: 392
+Customer 0 deposits 4. Balance: 96
+Customer 4 wants to withdraw 82. Balance: 320
+Customer 4 withdraws 82. Balance 238
+Customer 5 wants to withdraw 47. Balance: 238
+Customer 5 withdraws 47. Balance 191
 ```
 
 **Trial 3:**
 ```
+Customer 0 wants to withdraw 33. Balance: 0
+Customer 0 withdraws 33. Balance 262
+Customer 3 deposits 32. Balance: 123
+Customer 4 deposits 56. Balance: 179
+Customer 5 deposits 66. Balance: 245
+Customer 8 deposits 50. Balance: 295
+Customer 1 deposits 91. Balance: 91
+Customer 2 wants to withdraw 23. Balance: 262
+Customer 2 withdraws 23. Balance 239
+Customer 6 wants to withdraw 5. Balance: 239
+Customer 6 withdraws 5. Balance 234
+Customer 7 wants to withdraw 60. Balance: 234
+Customer 7 withdraws 60. Balance 174
+Customer 9 wants to withdraw 16. Balance: 174
+Customer 9 withdraws 16. Balance 158
 ```
 
 **Trial 4:**
 ```
+Customer 1 wants to withdraw 92. Balance: 0
+Customer 1 withdraws 92. Balance 166
+Customer 3 deposits 96. Balance: 97
+Customer 4 deposits 64. Balance: 161
+Customer 6 deposits 33. Balance: 194
+Customer 7 deposits 36. Balance: 230
+Customer 9 deposits 28. Balance: 258
+Customer 0 deposits 1. Balance: 1
+Customer 2 wants to withdraw 79. Balance: 166
+Customer 2 withdraws 79. Balance 87
+Customer 5 wants to withdraw 4. Balance: 87
+Customer 5 withdraws 4. Balance 83
+Customer 8 wants to withdraw 64. Balance: 83
+Customer 8 withdraws 64. Balance 19
 ```
 
 **Trial 5:**
 ```
+Customer 1 deposits 78. Balance: 78
+Customer 0 deposits 68. Balance: 146
+Customer 2 wants to withdraw 24. Balance: 146
+Customer 2 withdraws 24. Balance 449
+Customer 7 deposits 60. Balance: 306
+Customer 8 deposits 24. Balance: 330
+Customer 5 deposits 66. Balance: 396
+Customer 6 deposits 77. Balance: 473
+Customer 3 deposits 100. Balance: 246
+Customer 4 wants to withdraw 45. Balance: 449
+Customer 4 withdraws 45. Balance 404
+Customer 9 wants to withdraw 31. Balance: 404
+Customer 9 withdraws 31. Balance 373
 ```
 ## Comparison Between (3a) and (3b)
 The implementation uses threads to simulate multiple customers performing transactions and demonstrates the differences between the two synchronization approaches. The output of the programs demonstrate how deposit and withdrawal operations are synchronized to prevent race conditions. In the basic solution, withdrawals occur as soon as enough funds are available, but they do not necessarily follow the order in which they were requested. This can result in smaller withdrawals being processed before larger ones if sufficient funds exists for the smaller amount first. In the FCFS solution, withdrawals are processed in strict order, ensuring that earlier requests are fulfilled before later ones, even if a smaller request could be handled first. This gurantees fairness among withdrawal requests and prevents starvation, making the behavior of the program more predictable and structured.

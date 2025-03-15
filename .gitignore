@@ -4,3 +4,5 @@ bankAccountFCFS.exe
 unisexBathroom.exe
 fairUnisexBathroom.exe
 .vscode
+.gitattributes
+.gitignore

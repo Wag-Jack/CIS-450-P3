@@ -26,8 +26,8 @@ queue<pair<int, condition_variable*>> withdrawQueue; //queue for fsfc withdrawal
 // deposit implementation
 void deposit(int id, int amount) {
     balance += amount;// add amount to balance
-    canWithdraw.notify_one();// notify waiting withdrawals
     printf("Customer %d deposits %d. Balance: %d\n", id, amount, balance);
+    canWithdraw.notify_one();// notify waiting withdrawals
 }
 
 // fcfs withdraw function
@@ -46,16 +46,6 @@ void withdraw(int id, int amount) {
     while (balance < amount) {
         canWithdraw.wait(lock, [&amount] {return (balance >= amount);});
     }
-
-    /*
-    //add withdraw request to queue
-    withdrawQueue.push({amount, &myCV});
-
-    // wiat til withdrawal is at the front of the queue and thees enough funds
-    cv.wait(lock, [&] {
-        return (withdrawQueue.front().second == &myCV) && (balance >= amount);
-    });
-    */
 
     //process withdrawla 
     balance -= amount;

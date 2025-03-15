@@ -22,8 +22,9 @@ condition_variable canWithdraw;// for waiting withdrawals when balance is low
 // deposit implementation
 void deposit(int id, int amount) {
     balance += amount; //add amount to balance
-    canWithdraw.notify_all(); //notify waiting withdrawals
     printf("Customer %d deposits %d. Balance: %d\n", id, amount, balance);
+    canWithdraw.notify_one(); //notify waiting withdrawals
+    
 }
 
 // withdraw function
@@ -42,7 +43,6 @@ void withdraw(int id, int amount) {
     printf("Customer %d withdraws %d. Balance: %d\n", id, amount, balance);
 }
 
-// Customer function
 void customer(int id) {
     uniform_int_distribution<int> actionDistribution(0,1);
     uniform_int_distribution<int> amountDistribution(1,100);
@@ -50,7 +50,7 @@ void customer(int id) {
     int action = actionDistribution(gen);//0 is withdraw and 1 is deposit
     int amount = amountDistribution(gen); //random number generator between 1-100
 
-    if (action == 0) { //With draw
+    if (action == 0) { // Withdraw
         withdraw(id, amount);
     } else { // Deposit
         deposit(id, amount);
